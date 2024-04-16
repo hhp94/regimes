@@ -93,9 +93,11 @@ bdlimbasis <- function(X,basis.opts){
       if(basis.opts$pve<0 | basis.opts$pve>1) pve <- .99
     }
     
-    
+    # k is chosen from basis type in mgcv::gam. When there's not a lot of time points, 
+    # the chosen k is too large for the default basis tprs. -1 is the default value
+    if(is.null(basis.opts$k)) {basis.opts$k <- -1}
     for(i in 1:nrow(X)){
-      X[i,] <- predict(gam(X[i,]~s(seq(1:ncol(X)))))
+      X[i,] <- predict(gam(X[i,]~s(seq(1:ncol(X)), k = basis.opts$k)))
     }
     
     eigcorX <- eigen(cor(X))
